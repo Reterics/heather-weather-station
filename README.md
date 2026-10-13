@@ -1,5 +1,7 @@
 # Heather Weather Station
 
+[![CI](https://github.com/Reterics/heather-weather-station/actions/workflows/ci.yml/badge.svg)](https://github.com/Reterics/heather-weather-station/actions/workflows/ci.yml)
+
 A small production service that reads **humidity**, **weather**, **sunlight**, and **terrain height** for a latitude and longitude. One process serves the JSON API and the station dashboard.
 
 Readings are weather-model analyses from [Open-Meteo](https://open-meteo.com/) (CC BY 4.0), not a physical sensor at the coordinate.
