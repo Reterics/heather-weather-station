@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
-    <title>Heather Weather Station</title>
+    <title>Heather</title>
     <meta
       name="description"
       content="Humidity, weather, sunlight, and terrain height for a geographic coordinate."
@@ -13,50 +13,49 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <div class="station">
-      <header class="mast">
-        <p class="kicker">Field station HW–01</p>
-        <h1>Heather</h1>
-        <p class="lede">
-          Humidity, weather, sunlight, and terrain height for one point on Earth.
-          Readings come from weather models, not a sensor in the ground.
-        </p>
+    <div class="console">
+      <header class="bar">
+        <div class="brand">
+          <img class="mark" src="/favicon.svg" width="22" height="22" alt="" />
+          <span class="name">Heather</span>
+          <span class="tag">HW-01</span>
+        </div>
+        <p class="scope">Model readings for one coordinate</p>
+        <a class="docs" href="/docs">API</a>
       </header>
 
       <form id="query" class="query" autocomplete="off">
-        <div class="fields">
-          <label>
-            Latitude
-            <input
-              id="latitude"
-              name="latitude"
-              type="number"
-              inputmode="decimal"
-              min="-90"
-              max="90"
-              step="any"
-              placeholder="47.4979"
-              required
-            />
-          </label>
-          <label>
-            Longitude
-            <input
-              id="longitude"
-              name="longitude"
-              type="number"
-              inputmode="decimal"
-              min="-180"
-              max="180"
-              step="any"
-              placeholder="19.0402"
-              required
-            />
-          </label>
-        </div>
-        <div class="actions">
+        <label>
+          Lat
+          <input
+            id="latitude"
+            name="latitude"
+            type="number"
+            inputmode="decimal"
+            min="-90"
+            max="90"
+            step="any"
+            placeholder="47.4979"
+            required
+          />
+        </label>
+        <label>
+          Lon
+          <input
+            id="longitude"
+            name="longitude"
+            type="number"
+            inputmode="decimal"
+            min="-180"
+            max="180"
+            step="any"
+            placeholder="19.0402"
+            required
+          />
+        </label>
+        <div class="controls">
           <button id="read" type="submit">Read conditions</button>
-          <button id="locate" type="button">Use this device</button>
+          <button id="locate" type="button">Locate</button>
         </div>
         <div class="presets" role="group" aria-label="Example coordinates">
           <button type="button" data-lat="47.4979" data-lon="19.0402">Budapest</button>
@@ -65,51 +64,64 @@
         </div>
       </form>
 
-      <p id="status" class="status" role="status"></p>
+      <div class="strip">
+        <p id="status" class="status" role="status">Idle</p>
+        <p id="cache-pill" class="pill" hidden></p>
+        <p id="provenance" class="provenance"></p>
+      </div>
       <p id="banner" class="banner" hidden></p>
 
       <section id="empty" class="empty">
-        <p>Enter a latitude and longitude. The station returns the four readings for that point.</p>
+        <p>Enter latitude and longitude. Humidity, weather, sunlight, and height return for that point.</p>
       </section>
 
       <section id="board" class="board" hidden aria-live="polite">
-        <article class="card card-humidity">
-          <p class="card-kicker">Humidity</p>
-          <p class="reading"><span id="humidity-value">—</span><span class="unit">%</span></p>
+        <article class="tile tile-humidity">
+          <header>
+            <span>Humidity</span>
+            <span class="unit">%</span>
+          </header>
+          <p class="reading" id="humidity-value">—</p>
           <div class="meter" aria-hidden="true"><span id="humidity-meter"></span></div>
-          <p id="humidity-detail" class="detail">Dew point</p>
+          <p id="humidity-detail" class="meta">Dew point</p>
         </article>
 
-        <article class="card card-weather">
-          <p class="card-kicker">Weather</p>
-          <p class="reading"><span id="weather-value">—</span><span class="unit">°C</span></p>
-          <p id="weather-summary" class="summary">—</p>
-          <p id="weather-detail" class="detail"></p>
+        <article class="tile tile-weather">
+          <header>
+            <span>Weather</span>
+            <span class="unit">°C</span>
+          </header>
+          <p class="reading" id="weather-value">—</p>
+          <p id="weather-summary" class="state">—</p>
+          <p id="weather-detail" class="meta"></p>
         </article>
 
-        <article class="card card-sun">
-          <p class="card-kicker">Sunlight</p>
-          <p class="reading"><span id="sun-value">—</span><span class="unit">W/m²</span></p>
+        <article class="tile tile-sun">
+          <header>
+            <span>Sunlight</span>
+            <span class="unit">W/m²</span>
+          </header>
+          <p class="reading" id="sun-value">—</p>
           <div class="meter" aria-hidden="true"><span id="sun-meter"></span></div>
-          <p id="sun-summary" class="summary">—</p>
-          <p id="sun-detail" class="detail"></p>
+          <p id="sun-summary" class="state">—</p>
+          <p id="sun-detail" class="meta"></p>
         </article>
 
-        <article class="card card-height">
-          <p class="card-kicker">Height</p>
-          <p class="reading"><span id="height-value">—</span><span class="unit">m</span></p>
-          <p id="height-summary" class="summary">Above sea level</p>
-          <p id="height-detail" class="detail"></p>
+        <article class="tile tile-height">
+          <header>
+            <span>Height</span>
+            <span class="unit">m</span>
+          </header>
+          <p class="reading" id="height-value">—</p>
+          <p id="height-summary" class="state">Above sea level</p>
+          <p id="height-detail" class="meta"></p>
         </article>
       </section>
 
       <footer class="colophon">
-        <p id="provenance"></p>
-        <p>
-          Data:
-          <a href="https://open-meteo.com/">Open-Meteo</a>,
-          CC BY 4.0. API: <a href="/docs">/docs</a>.
-        </p>
+        <a href="https://open-meteo.com/">Open-Meteo</a>
+        <span>CC BY 4.0</span>
+        <a href="/docs">/docs</a>
       </footer>
     </div>
     <script src="/app.js"></script>

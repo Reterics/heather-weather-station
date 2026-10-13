@@ -6,6 +6,7 @@ const banner = document.querySelector("#banner");
 const empty = document.querySelector("#empty");
 const board = document.querySelector("#board");
 const provenance = document.querySelector("#provenance");
+const cachePill = document.querySelector("#cache-pill");
 const buttons = form.querySelectorAll("button");
 const STORAGE_KEY = "heather.coordinates";
 
@@ -28,7 +29,7 @@ function duration(seconds) {
   const total = Math.round(Number(seconds));
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
-  return `${hours} h ${minutes} min`;
+  return `${hours}h ${minutes}m`;
 }
 
 function cardinal(degrees) {
@@ -39,7 +40,7 @@ function cardinal(degrees) {
   return DIRECTIONS[(index + 16) % 16];
 }
 
-function clock(iso, timeZone) {
+function clock(iso, timeZone, withDate) {
   if (!iso) {
     return "—";
   }
@@ -47,13 +48,9 @@ function clock(iso, timeZone) {
   if (Number.isNaN(parsed.getTime())) {
     return iso;
   }
-  const options = {
-    hour: "2-digit",
-    minute: "2-digit",
-    month: "short",
-    day: "numeric",
-    timeZoneName: "short",
-  };
+  const options = withDate
+    ? { hour: "2-digit", minute: "2-digit", month: "short", day: "numeric", timeZoneName: "short" }
+    : { hour: "2-digit", minute: "2-digit" };
   if (timeZone) {
     options.timeZone = timeZone;
   }
@@ -70,68 +67,71 @@ function setBusy(busy) {
     button.disabled = busy;
   });
   form.setAttribute("aria-busy", busy ? "true" : "false");
-  statusNode.textContent = busy ? "Reading the station…" : statusNode.textContent;
+  if (busy) {
+    statusNode.textContent = "Reading";
+  }
 }
 
 function showError(message) {
   banner.hidden = false;
   banner.textContent = message;
-  statusNode.textContent = "Reading failed.";
+  statusNode.textContent = "Failed";
   if (board.hidden) {
     empty.hidden = false;
     provenance.textContent = "";
+    cachePill.hidden = true;
   }
 }
 
 function render(conditions) {
+  const zone = conditions.location.timezone;
   const humidity = conditions.humidity.relative_percent;
   document.querySelector("#humidity-value").textContent = format(humidity, 0);
   document.querySelector("#humidity-meter").style.width = `${Math.max(0, Math.min(100, humidity || 0))}%`;
   document.querySelector("#humidity-detail").textContent =
-    `Dew point ${format(conditions.humidity.dew_point_c, 1)} °C`;
+    `dew ${format(conditions.humidity.dew_point_c, 1)} °C`;
 
   document.querySelector("#weather-value").textContent = format(conditions.weather.temperature_c, 1);
   document.querySelector("#weather-summary").textContent = conditions.weather.summary;
   const wind = `${format(conditions.weather.wind_speed_kmh, 0)} km/h ${cardinal(conditions.weather.wind_direction_deg)}`;
   document.querySelector("#weather-detail").textContent =
-    `Feels ${format(conditions.weather.apparent_temperature_c, 1)} °C · ${wind} · ` +
-    `cloud ${format(conditions.weather.cloud_cover_percent, 0)}% · ` +
-    `rain ${format(conditions.weather.precipitation_mm, 1)} mm · ` +
-    `${format(conditions.weather.pressure_hpa, 0)} hPa`;
+    `feels ${format(conditions.weather.apparent_temperature_c, 1)} · ${wind}\n` +
+    `cloud ${format(conditions.weather.cloud_cover_percent, 0)}% · rain ${format(conditions.weather.precipitation_mm, 1)} mm · ${format(conditions.weather.pressure_hpa, 0)} hPa`;
 
   const radiation = conditions.sunlight.shortwave_radiation_wm2;
   document.querySelector("#sun-value").textContent = format(radiation, 0);
   document.querySelector("#sun-meter").style.width = `${Math.max(0, Math.min(100, ((radiation || 0) / 1000) * 100))}%`;
   document.querySelector("#sun-summary").textContent = conditions.sunlight.description;
-  const zone = conditions.location.timezone;
   document.querySelector("#sun-detail").textContent =
-    `UV ${format(conditions.sunlight.uv_index, 1)} · max today ${format(conditions.sunlight.uv_index_max_today, 1)}\n` +
-    `Sunshine ${duration(conditions.sunlight.sunshine_duration_today_s)} · daylight ${duration(conditions.sunlight.daylight_duration_s)}\n` +
-    `Sunrise ${clock(conditions.sunlight.sunrise, zone)} · sunset ${clock(conditions.sunlight.sunset, zone)}`;
+    `UV ${format(conditions.sunlight.uv_index, 1)} · max ${format(conditions.sunlight.uv_index_max_today, 1)} · sun ${duration(conditions.sunlight.sunshine_duration_today_s)}\n` +
+    `rise ${clock(conditions.sunlight.sunrise, zone, false)} · set ${clock(conditions.sunlight.sunset, zone, false)} · day ${duration(conditions.sunlight.daylight_duration_s)}`;
 
   document.querySelector("#height-value").textContent = format(conditions.height.elevation_m, 0);
-  document.querySelector("#height-summary").textContent = "Terrain elevation above sea level";
+  document.querySelector("#height-summary").textContent = "Above sea level";
   document.querySelector("#height-detail").textContent =
-    `${format(conditions.height.elevation_ft, 0)} ft at the model grid point`;
+    `${format(conditions.height.elevation_ft, 0)} ft · model grid`;
 
   const cacheLabel = {
-    hit: "Served from the station cache",
-    miss: "Fresh from the weather service",
-    stale: "Cached after the weather service failed",
+    hit: "cache hit",
+    miss: "fresh",
+    stale: "stale cache",
   }[conditions.cache.status];
+  cachePill.hidden = false;
+  cachePill.dataset.state = conditions.cache.status;
+  cachePill.textContent = conditions.cache.status.toUpperCase();
   provenance.textContent =
-    `${cacheLabel}. Observed ${clock(conditions.observed_at, conditions.location.timezone)}. ` +
-    `Requested ${conditions.location.latitude.toFixed(4)}, ${conditions.location.longitude.toFixed(4)}. ` +
-    `Grid point ${conditions.location.resolved_latitude.toFixed(4)}, ${conditions.location.resolved_longitude.toFixed(4)} ` +
-    `(${conditions.location.timezone || "local time"}).`;
+    `${cacheLabel} · obs ${clock(conditions.observed_at, zone, true)} · ` +
+    `req ${Number(conditions.location.latitude).toFixed(4)}, ${Number(conditions.location.longitude).toFixed(4)} · ` +
+    `grid ${Number(conditions.location.resolved_latitude).toFixed(4)}, ${Number(conditions.location.resolved_longitude).toFixed(4)} · ` +
+    `${zone || "local"}`;
 
   banner.hidden = conditions.cache.status !== "stale";
   if (conditions.cache.status === "stale") {
-    banner.textContent = "The weather service did not answer. This reading is saved from an earlier request and may be out of date.";
+    banner.textContent = "Upstream failed. Showing the last saved reading.";
   }
   empty.hidden = true;
   board.hidden = false;
-  statusNode.textContent = "Conditions updated.";
+  statusNode.textContent = "Updated";
 }
 
 async function readConditions(latitude, longitude) {
@@ -148,14 +148,12 @@ async function readConditions(latitude, longitude) {
         ? body.error.message
         : `The station could not read that point (${response.status}).`;
       showError(message);
-      statusNode.textContent = "Reading failed.";
       return;
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ latitude, longitude }));
     render(body);
   } catch (_error) {
     showError("The station could not be reached.");
-    statusNode.textContent = "Reading failed.";
   } finally {
     setBusy(false);
   }
@@ -168,10 +166,10 @@ form.addEventListener("submit", (event) => {
 
 document.querySelector("#locate").addEventListener("click", () => {
   if (!navigator.geolocation) {
-    statusNode.textContent = "This browser has no location service. Enter coordinates instead.";
+    statusNode.textContent = "No location";
     return;
   }
-  statusNode.textContent = "Asking for this device’s location…";
+  statusNode.textContent = "Locating";
   navigator.geolocation.getCurrentPosition(
     (position) => {
       latitudeInput.value = position.coords.latitude.toFixed(5);
@@ -179,7 +177,7 @@ document.querySelector("#locate").addEventListener("click", () => {
       readConditions(latitudeInput.value, longitudeInput.value);
     },
     () => {
-      statusNode.textContent = "Location was not shared. Enter coordinates instead.";
+      statusNode.textContent = "Location denied";
     },
     { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
   );

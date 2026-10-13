@@ -1,5 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#1a1f16"/>
-  <path d="M8 20c2-6 4-8 8-8s6 2 8 8" fill="none" stroke="#e0b4d4" stroke-width="2"/>
-  <circle cx="16" cy="12" r="2" fill="#e6c48a"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Heather station mark">
+  <rect width="32" height="32" rx="7" fill="#12161c"/>
+  <rect x="1.25" y="1.25" width="29.5" height="29.5" rx="6" fill="none" stroke="#7eb6ff" stroke-width="1.5"/>
+  <path d="M16 7.5v13" stroke="#e7ecf3" stroke-width="1.75" stroke-linecap="round"/>
+  <path d="M9 13.5h14" stroke="#e7ecf3" stroke-width="1.75" stroke-linecap="round"/>
+  <circle cx="9" cy="13.5" r="2.35" fill="none" stroke="#3dd68c" stroke-width="1.5"/>
+  <circle cx="23" cy="13.5" r="2.35" fill="none" stroke="#f0c14a" stroke-width="1.5"/>
+  <path d="M8 24.5h16" stroke="#7eb6ff" stroke-width="1.75" stroke-linecap="round"/>
+  <circle cx="16" cy="24.5" r="1.7" fill="#e7ecf3"/>
 </svg>
