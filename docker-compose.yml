@@ -1,0 +1,10 @@
+services:
+  heather:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      HEATHER_LOG_LEVEL: info
+      HEATHER_CACHE_TTL_SECONDS: "600"
+      HEATHER_RATE_LIMIT_PER_MINUTE: "60"
+    restart: unless-stopped
