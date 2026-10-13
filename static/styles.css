@@ -1,0 +1,283 @@
+:root {
+  color-scheme: dark;
+  --bg: #12150f;
+  --panel: rgba(28, 33, 24, 0.92);
+  --ink: #f4f0e6;
+  --muted: #b7b09f;
+  --line: rgba(244, 240, 230, 0.14);
+  --heather: #e0b4d4;
+  --moss: #c5d48a;
+  --gold: #e6c48a;
+  --sky: #9ecbdc;
+  --danger: #e7a08c;
+  --shadow: 0 24px 50px rgba(0, 0, 0, 0.28);
+  --serif: Palatino, "Palatino Linotype", "Iowan Old Style", Georgia, serif;
+  --sans: "Segoe UI", "Avenir Next", "Trebuchet MS", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse at 8% -20%, rgba(224, 180, 212, 0.18), transparent 46%),
+    radial-gradient(ellipse at 110% 0%, rgba(158, 203, 220, 0.12), transparent 40%),
+    linear-gradient(180deg, #1a1f16 0%, var(--bg) 48%, #0d100c 100%);
+}
+
+.station {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.kicker,
+.card-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--heather);
+}
+
+h1 {
+  margin: 8px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(4rem, 10vw, 6.4rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.85;
+}
+
+.lede {
+  max-width: 38rem;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.query,
+.card,
+.empty {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.query {
+  margin-top: 32px;
+  padding: 18px;
+  border-radius: 18px;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #10140e;
+  color: var(--ink);
+  font: 1.15rem/1.2 var(--serif);
+}
+
+input:focus {
+  outline: 2px solid var(--heather);
+  outline-offset: 2px;
+}
+
+.actions,
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--ink);
+  font: 0.95rem/1 var(--sans);
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--heather);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+#read {
+  background: var(--ink);
+  color: #1a1c14;
+  border-color: transparent;
+  font-weight: 650;
+}
+
+.presets button {
+  color: var(--muted);
+}
+
+.status,
+.banner,
+.detail,
+.summary,
+.colophon {
+  color: var(--muted);
+}
+
+.status {
+  min-height: 1.4em;
+  margin: 14px 4px;
+}
+
+.banner {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(231, 160, 140, 0.12);
+  color: var(--danger);
+}
+
+.empty {
+  padding: 28px;
+  border-radius: 18px;
+}
+
+.empty p {
+  margin: 0;
+  max-width: 36rem;
+  line-height: 1.5;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.card {
+  padding: 20px 20px 18px;
+  border-radius: 18px;
+  min-height: 220px;
+}
+
+.card-humidity { border-top: 3px solid var(--sky); }
+.card-weather { border-top: 3px solid var(--gold); }
+.card-sun { border-top: 3px solid var(--heather); }
+.card-height { border-top: 3px solid var(--moss); }
+
+.reading {
+  margin: 18px 0 8px;
+  font-family: var(--serif);
+  font-size: clamp(3.2rem, 6vw, 4.5rem);
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.unit {
+  margin-left: 0.28em;
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.summary {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
+.detail {
+  margin: 10px 0 0;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.meter {
+  height: 8px;
+  margin: 8px 0 12px;
+  border-radius: 999px;
+  background: rgba(244, 240, 230, 0.08);
+  overflow: hidden;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: currentColor;
+}
+
+.card-humidity .meter span { color: var(--sky); background: var(--sky); }
+.card-sun .meter span { color: var(--heather); background: var(--heather); }
+
+.colophon {
+  margin-top: 28px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.colophon a {
+  color: var(--gold);
+}
+
+@media (max-width: 720px) {
+  .station {
+    width: min(100% - 20px, 1080px);
+    padding-top: 28px;
+  }
+
+  .fields,
+  .board {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
